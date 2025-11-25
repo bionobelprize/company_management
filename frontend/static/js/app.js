@@ -92,10 +92,18 @@ async function handleLogin(e) {
     const errorDiv = document.getElementById('login-error');
     
     try {
-        // First, try to initialize admin if no users exist
-        await fetch(`${API_BASE_URL}/auth/init-admin`, {
-            method: 'POST'
-        }).catch(() => {}); // Ignore error if admin already exists
+        // First, try to initialize admin if no users exist (ignore 400 error if admin already exists)
+        try {
+            const initResponse = await fetch(`${API_BASE_URL}/auth/init-admin`, {
+                method: 'POST'
+            });
+            // Only log unexpected errors (not 400 which means admin already exists)
+            if (!initResponse.ok && initResponse.status !== 400) {
+                console.warn('Unexpected error initializing admin:', initResponse.status);
+            }
+        } catch (initError) {
+            console.warn('Failed to initialize admin:', initError.message);
+        }
         
         const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: 'POST',
