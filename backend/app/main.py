@@ -1,4 +1,5 @@
 """Main FastAPI application for Biotech Company Inventory Management System."""
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -9,6 +10,17 @@ from .config import APP_TITLE, APP_DESCRIPTION, APP_VERSION
 from .database import connect_to_mongo, close_mongo_connection
 from .routers import products, inventory, purchases, sales, partners
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan context manager for startup and shutdown events."""
+    # Startup: Connect to MongoDB
+    await connect_to_mongo()
+    yield
+    # Shutdown: Close MongoDB connection
+    await close_mongo_connection()
+
+
 # Create FastAPI application
 app = FastAPI(
     title=APP_TITLE,
@@ -16,7 +28,8 @@ app = FastAPI(
     version=APP_VERSION,
     docs_url="/api/docs",
     redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json"
+    openapi_url="/api/openapi.json",
+    lifespan=lifespan
 )
 
 # CORS middleware configuration
@@ -34,19 +47,6 @@ app.include_router(inventory.router, prefix="/api")
 app.include_router(purchases.router, prefix="/api")
 app.include_router(sales.router, prefix="/api")
 app.include_router(partners.router, prefix="/api")
-
-
-# Database lifecycle events
-@app.on_event("startup")
-async def startup_db_client():
-    """Connect to MongoDB on startup."""
-    await connect_to_mongo()
-
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    """Disconnect from MongoDB on shutdown."""
-    await close_mongo_connection()
 
 
 # Root endpoint
