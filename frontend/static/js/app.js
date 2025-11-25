@@ -5,6 +5,7 @@
 const API_BASE_URL = '/api';
 let currentPage = 'dashboard';
 let currentEditId = null;
+let authToken = null;
 
 // Page titles mapping
 const pageTitles = {
@@ -35,9 +36,128 @@ const partnerTypes = [
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', () => {
+    initAuth();
+});
+
+// Authentication initialization
+function initAuth() {
+    authToken = localStorage.getItem('authToken');
+    
+    if (authToken) {
+        // Verify token is still valid
+        verifyAuth();
+    } else {
+        showLoginPage();
+    }
+    
+    // Setup login form
+    const loginForm = document.getElementById('login-form');
+    loginForm.addEventListener('submit', handleLogin);
+    
+    // Setup logout button
+    const logoutBtn = document.getElementById('logout-btn');
+    logoutBtn.addEventListener('click', handleLogout);
+}
+
+// Verify authentication
+async function verifyAuth() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+        
+        if (response.ok) {
+            const user = await response.json();
+            showMainApp(user);
+        } else {
+            // Token is invalid, show login
+            localStorage.removeItem('authToken');
+            authToken = null;
+            showLoginPage();
+        }
+    } catch (error) {
+        console.error('Auth verification failed:', error);
+        showLoginPage();
+    }
+}
+
+// Handle login
+async function handleLogin(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+    const errorDiv = document.getElementById('login-error');
+    
+    try {
+        // First, try to initialize admin if no users exist
+        await fetch(`${API_BASE_URL}/auth/init-admin`, {
+            method: 'POST'
+        }).catch(() => {}); // Ignore error if admin already exists
+        
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            authToken = data.access_token;
+            localStorage.setItem('authToken', authToken);
+            
+            // Get user info
+            const userResponse = await fetch(`${API_BASE_URL}/auth/me`, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+            
+            if (userResponse.ok) {
+                const user = await userResponse.json();
+                showMainApp(user);
+            }
+        } else {
+            const error = await response.json();
+            errorDiv.textContent = error.detail || '登录失败';
+            errorDiv.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Login failed:', error);
+        errorDiv.textContent = '网络错误，请重试';
+        errorDiv.style.display = 'block';
+    }
+}
+
+// Handle logout
+function handleLogout() {
+    localStorage.removeItem('authToken');
+    authToken = null;
+    showLoginPage();
+}
+
+// Show login page
+function showLoginPage() {
+    document.getElementById('login-container').style.display = 'flex';
+    document.getElementById('app-container').style.display = 'none';
+    document.getElementById('login-username').value = '';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-error').style.display = 'none';
+}
+
+// Show main application
+function showMainApp(user) {
+    document.getElementById('login-container').style.display = 'none';
+    document.getElementById('app-container').style.display = 'flex';
+    document.getElementById('current-user').textContent = user.full_name || user.username;
+    
     initNavigation();
     loadDashboard();
-});
+}
 
 // Navigation initialization
 function initNavigation() {
@@ -118,12 +238,24 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
         }
     };
     
+    // Add auth token if available
+    if (authToken) {
+        options.headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    
     if (data) {
         options.body = JSON.stringify(data);
     }
     
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+        
+        // Handle authentication errors
+        if (response.status === 401) {
+            handleLogout();
+            throw new Error('登录已过期，请重新登录');
+        }
+        
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.detail || 'Request failed');

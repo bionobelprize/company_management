@@ -12,6 +12,62 @@ body {
     line-height: 1.6;
 }
 
+/* Login Page */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+}
+
+.login-box {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-box h2 {
+    color: #1a237e;
+    margin-bottom: 10px;
+    font-size: 1.6rem;
+}
+
+.login-subtitle {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.login-box .form-group {
+    text-align: left;
+}
+
+.btn-block {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.login-hint {
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: #999;
+}
+
 /* App Container */
 .app-container {
     display: flex;
@@ -26,6 +82,8 @@ body {
     position: fixed;
     height: 100vh;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .logo {
@@ -41,6 +99,7 @@ body {
 .nav-menu {
     list-style: none;
     padding: 10px 0;
+    flex: 1;
 }
 
 .nav-item {
@@ -67,6 +126,22 @@ body {
 
 .nav-text {
     font-size: 0.95rem;
+}
+
+.sidebar-footer {
+    padding: 15px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-info {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.sidebar-footer .btn {
+    width: 100%;
+    justify-content: center;
 }
 
 /* Main Content */
