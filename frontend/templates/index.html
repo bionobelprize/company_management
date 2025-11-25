@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生物公司进销存管理系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <h2>🧬 生物进销存</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-page="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">仪表盘</span>
+                </li>
+                <li class="nav-item" data-page="products">
+                    <span class="nav-icon">🧪</span>
+                    <span class="nav-text">产品管理</span>
+                </li>
+                <li class="nav-item" data-page="inventory">
+                    <span class="nav-icon">📦</span>
+                    <span class="nav-text">库存管理</span>
+                </li>
+                <li class="nav-item" data-page="purchases">
+                    <span class="nav-icon">🛒</span>
+                    <span class="nav-text">采购管理</span>
+                </li>
+                <li class="nav-item" data-page="sales">
+                    <span class="nav-icon">💰</span>
+                    <span class="nav-text">销售管理</span>
+                </li>
+                <li class="nav-item" data-page="partners">
+                    <span class="nav-icon">🤝</span>
+                    <span class="nav-text">合作伙伴</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="header">
+                <h1 id="page-title">仪表盘</h1>
+                <div class="header-actions">
+                    <button id="add-btn" class="btn btn-primary" style="display: none;">
+                        <span>+ 新增</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">🧪</div>
+                            <div class="stat-info">
+                                <h3>产品总数</h3>
+                                <p id="stat-products">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📦</div>
+                            <div class="stat-info">
+                                <h3>库存记录</h3>
+                                <p id="stat-inventory">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🛒</div>
+                            <div class="stat-info">
+                                <h3>采购订单</h3>
+                                <p id="stat-purchases">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-info">
+                                <h3>销售订单</h3>
+                                <p id="stat-sales">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-content">
+                        <div class="card">
+                            <h3>欢迎使用生物公司进销存管理系统</h3>
+                            <p>本系统用于管理蛋白、抗原、抗体及相关合成服务的进销存业务。</p>
+                            <ul>
+                                <li>📊 <strong>仪表盘</strong> - 查看系统概览和统计数据</li>
+                                <li>🧪 <strong>产品管理</strong> - 管理蛋白、抗原、抗体等产品信息</li>
+                                <li>📦 <strong>库存管理</strong> - 管理产品库存、入库和出库操作</li>
+                                <li>🛒 <strong>采购管理</strong> - 管理采购订单</li>
+                                <li>💰 <strong>销售管理</strong> - 管理销售订单</li>
+                                <li>🤝 <strong>合作伙伴</strong> - 管理供应商和客户信息</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Page -->
+                <div id="products-page" class="page">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>产品编号</th>
+                                    <th>产品名称</th>
+                                    <th>产品类型</th>
+                                    <th>规格</th>
+                                    <th>单位</th>
+                                    <th>储存条件</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table-body">
+                                <tr><td colspan="7" class="loading">加载中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Inventory Page -->
+                <div id="inventory-page" class="page">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>产品编号</th>
+                                    <th>产品名称</th>
+                                    <th>仓库</th>
+                                    <th>批次号</th>
+                                    <th>数量</th>
+                                    <th>单价</th>
+                                    <th>货位</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table-body">
+                                <tr><td colspan="8" class="loading">加载中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Purchases Page -->
+                <div id="purchases-page" class="page">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>订单编号</th>
+                                    <th>供应商</th>
+                                    <th>总金额</th>
+                                    <th>状态</th>
+                                    <th>下单日期</th>
+                                    <th>预计到货</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchases-table-body">
+                                <tr><td colspan="7" class="loading">加载中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sales Page -->
+                <div id="sales-page" class="page">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>订单编号</th>
+                                    <th>客户</th>
+                                    <th>总金额</th>
+                                    <th>状态</th>
+                                    <th>下单日期</th>
+                                    <th>预计发货</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sales-table-body">
+                                <tr><td colspan="7" class="loading">加载中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Partners Page -->
+                <div id="partners-page" class="page">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>编号</th>
+                                    <th>名称</th>
+                                    <th>类型</th>
+                                    <th>联系人</th>
+                                    <th>电话</th>
+                                    <th>邮箱</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="partners-table-body">
+                                <tr><td colspan="8" class="loading">加载中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Add/Edit -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">新增</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Dynamic form content -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" id="modal-save-btn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
