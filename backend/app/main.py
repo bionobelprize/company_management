@@ -8,7 +8,7 @@ import os
 
 from .config import APP_TITLE, APP_DESCRIPTION, APP_VERSION
 from .database import connect_to_mongo, close_mongo_connection
-from .routers import products, inventory, purchases, sales, partners
+from .routers import products, inventory, purchases, sales, partners, auth
 
 
 @asynccontextmanager
@@ -42,6 +42,7 @@ app.add_middleware(
 )
 
 # Register routers
+app.include_router(auth.router, prefix="/api")
 app.include_router(products.router, prefix="/api")
 app.include_router(inventory.router, prefix="/api")
 app.include_router(purchases.router, prefix="/api")
